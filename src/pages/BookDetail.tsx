@@ -1,18 +1,42 @@
 import BorrowBookModal from "@/components/modules/BookDetail/BorrowBookModal";
 import { Button } from "@/components/ui/button";
 import Spinner from "@/components/ui/Spinner";
-import { useGetBookQuery } from "@/redux/api/baseApi";
-import { Link, useParams } from "react-router";
+import { useDeleteBookMutation, useGetBookQuery } from "@/redux/api/baseApi";
+import { useEffect } from "react";
+import { Link, useNavigate, useParams } from "react-router";
+import { toast } from "sonner";
 
 const BookDetail = () => {
   const { bookId } = useParams();
   const { data, isLoading } = useGetBookQuery(bookId);
+  const [deleteBook, { isSuccess, error }] = useDeleteBookMutation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isSuccess) {
+      toast.success("Book is deleted successfully!", {
+        position: "top-center",
+      });
+
+      setTimeout(() => {
+        navigate("/");
+      }, 1000);
+    }
+
+    if (error) {
+      console.log(error);
+    }
+  }, [isSuccess, navigate, error]);
 
   if (isLoading) {
     return <Spinner />;
   }
 
   const bookData = data.data;
+
+  const handleDeleteBook = () => {
+    deleteBook(bookId);
+  };
 
   return (
     <div className="min-h-[75vh] section">
@@ -40,13 +64,16 @@ const BookDetail = () => {
           <span className="font-semibold">Description:</span>{" "}
           {bookData?.description || "No description available."}
         </p>
-        <div className="flex justify-between mt-10">
+        <div className="flex justify-center mt-10 max-sm:flex-wrap">
           <BorrowBookModal
             bookId={bookId!}
             availableCopies={bookData?.copies}
           />
-          <Button>
+          <Button className="sm:mx-5 max-sm:w-full max-sm:my-3">
             <Link to={`/edit-book/${bookId}`}>Edit Book</Link>
+          </Button>
+          <Button className="max-sm:w-full text-lg" onClick={handleDeleteBook}>
+            Delete Book
           </Button>
         </div>
       </div>

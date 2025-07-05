@@ -59,7 +59,10 @@ const BorrowBookModal = ({ bookId, availableCopies }: BorrowBookModalProps) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="text-lg cursor-pointer" disabled={!availableCopies}>
+        <Button
+          className="text-lg cursor-pointer max-sm:w-full"
+          disabled={!availableCopies}
+        >
           Borrow Book
         </Button>
       </DialogTrigger>
